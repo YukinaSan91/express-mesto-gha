@@ -15,6 +15,7 @@ module.exports.createCard = (req, res, next) => {
   Card
     .create({ name, link, owner: _id })
     .then((user) => res.send({ data: user }))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -27,12 +28,14 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card
     .findByIdAndRemove(cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
       }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -51,12 +54,14 @@ module.exports.likeCard = (req, res, next) => {
       { $addToSet: { likes: _id } },
       { new: true },
     )
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
       }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -75,12 +80,14 @@ module.exports.dislikeCard = (req, res, next) => {
       { $pull: { likes: _id } },
       { new: true },
     )
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
       }
       res.send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });

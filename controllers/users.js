@@ -12,12 +12,14 @@ module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   User
     .findById(userId)
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       res.send({ data: user });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -34,6 +36,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       res.send({ data: user });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -47,12 +50,14 @@ module.exports.updateUser = (req, res, next) => {
 
   User
     .findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       res.send({ data: user });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
@@ -66,12 +71,14 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
   User
     .findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
       }
       res.send({ data: user });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
