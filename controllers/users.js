@@ -78,11 +78,5 @@ module.exports.updateUserAvatar = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    // eslint-disable-next-line consistent-return
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
-      }
-      next(err);
-    });
+    .catch(next);
 };
