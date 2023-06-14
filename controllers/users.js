@@ -49,7 +49,7 @@ module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User
-    .findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
