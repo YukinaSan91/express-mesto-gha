@@ -1,14 +1,14 @@
 const Card = require('../models/card');
-const { ERROR_BAD_REQUEST, NOT_FOUND_ERROR } = require('../utils/constants');
+const { ERROR_BAD_REQUEST, NOT_FOUND_ERROR, ERROR_CODE } = require('../utils/constants');
 
-module.exports.getCards = (req, res, next) => {
+module.exports.getCards = (req, res) => {
   Card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => next(err));
+    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.createCard = (req, res, next) => {
+module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const { _id } = req.user;
 
@@ -20,11 +20,11 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.deleteCard = (req, res, next) => {
+module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card
     .findByIdAndRemove(cardId)
@@ -40,11 +40,11 @@ module.exports.deleteCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.likeCard = (req, res, next) => {
+module.exports.likeCard = (req, res) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
@@ -66,11 +66,11 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.dislikeCard = (req, res, next) => {
+module.exports.dislikeCard = (req, res) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
@@ -92,6 +92,6 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };

@@ -1,3 +1,4 @@
 const ERROR_BAD_REQUEST = 400;
 const NOT_FOUND_ERROR = 404;
-module.exports = { ERROR_BAD_REQUEST, NOT_FOUND_ERROR };
+const ERROR_CODE = 500;
+module.exports = { ERROR_BAD_REQUEST, NOT_FOUND_ERROR, ERROR_CODE };

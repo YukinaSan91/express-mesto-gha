@@ -1,14 +1,14 @@
 const User = require('../models/user');
-const { ERROR_BAD_REQUEST, NOT_FOUND_ERROR } = require('../utils/constants');
+const { ERROR_BAD_REQUEST, NOT_FOUND_ERROR, ERROR_CODE } = require('../utils/constants');
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (req, res) => {
   User
     .find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => next(err));
+    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = (req, res) => {
   const { userId } = req.params;
   User
     .findById(userId)
@@ -24,11 +24,11 @@ module.exports.getUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User
@@ -41,11 +41,11 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User
@@ -62,11 +62,11 @@ module.exports.updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      next(err);
+      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
     });
 };
 
-module.exports.updateUserAvatar = (req, res, next) => {
+module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User
@@ -78,5 +78,5 @@ module.exports.updateUserAvatar = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch(next);
+    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
 };
