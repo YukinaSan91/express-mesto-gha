@@ -5,7 +5,7 @@ module.exports.getUsers = (req, res) => {
   User
     .find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -24,7 +24,7 @@ module.exports.getUser = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -41,7 +41,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -62,7 +62,7 @@ module.exports.updateUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
-      res.status(ERROR_CODE).send({ message: 'Произошла ошибка' });
+      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -78,5 +78,5 @@ module.exports.updateUserAvatar = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch(() => res.status(ERROR_CODE).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
 };
