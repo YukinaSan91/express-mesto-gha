@@ -2,14 +2,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  ERROR_BAD_REQUEST,
-  NOT_FOUND_ERROR,
-  ERROR_CODE,
-  UNAUTHORIZED_ERROR,
-} = require('../utils/constants');
+const { STATUS_OK } = require('../utils/constants');
 
-module.exports.login = (req, res) => {
+const ValidationError = require('../errors/ValidationError');
+const ConflictError = require('../errors/ConflictError');
+const NotFoundError = require('../errors/NotFoundError');
+
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User
@@ -19,56 +18,56 @@ module.exports.login = (req, res) => {
 
       res.send({ token });
     })
-    .catch(() => res.status(UNAUTHORIZED_ERROR).send({ message: 'Неправильные почта или пароль' }));
+    .catch(next);
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User
     .find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
   User
     .findById(userId)
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+        throw new NotFoundError('Запрашиваемый пользователь не найден');
       }
       res.send({ data: user });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+        return next(new ValidationError('Переданы некорректные данные'));
       }
-      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   const { _id } = req.user;
 
   User
     .findById(_id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+        throw new NotFoundError('Запрашиваемый пользователь не найден');
       }
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+        return next(new ValidationError('Переданы некорректные данные'));
       }
-      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -80,18 +79,25 @@ module.exports.createUser = (req, res) => {
       },
     ))
     .then((user) => {
-      res.send({ data: user });
+      const newDataUser = user.toObject();
+
+      res
+        .status(STATUS_OK)
+        .send({ data: newDataUser });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+        return next(new ValidationError('Переданы некорректные данные'));
       }
-      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
+      if (err.code === 11000) {
+        return next(new ConflictError('Пользователь с такой почтой уже существует'));
+      }
+      return next(err);
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User
@@ -99,20 +105,20 @@ module.exports.updateUser = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+        throw new NotFoundError('Запрашиваемый пользователь не найден');
       }
       res.send({ data: user });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+        return next(new ValidationError('Переданы некорректные данные'));
       }
-      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User
@@ -120,9 +126,9 @@ module.exports.updateUserAvatar = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+        throw new NotFoundError('Запрашиваемый пользователь не найден');
       }
       res.send({ data: user });
     })
-    .catch(() => res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
