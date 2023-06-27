@@ -138,4 +138,3 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch(next);
 };
-
