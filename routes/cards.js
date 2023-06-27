@@ -8,13 +8,14 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
+const { REGEX_URL } = require('../utils/constants');
 
 router.get('/cards', getCards);
 
 router.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().pattern(/^https?:\/\/[\w\-\.\/~:\?\#\[\]@!$&'\(\)\*\+,;=]+#?$/).required(),
+    link: Joi.string().pattern(REGEX_URL).required(),
   }),
 }), createCard);
 

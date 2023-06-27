@@ -4,7 +4,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, BD_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
 const app = express();
 const helmet = require('helmet');
@@ -16,10 +16,12 @@ const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { auth } = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
+const { REGEX_URL } = require('./utils/constants');
+const errorHandler = require('./middlewares/errorHandler');
 
 const NotFoundError = require('./errors/NotFoundError');
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(BD_URL);
 
 app.use(helmet());
 app.use(bodyParser.json());
@@ -29,7 +31,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^https?:\/\/[\w\-\.\/~:\?\#\[\]@!$&'\(\)\*\+,;=]+#?$/),
+    avatar: Joi.string().pattern(REGEX_URL),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
   }),
@@ -52,19 +54,7 @@ app.use('*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
