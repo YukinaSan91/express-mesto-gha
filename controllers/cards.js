@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable consistent-return */
 const Card = require('../models/card');
-const { STATUS_OK } = require('../utils/constants');
+const { STATUS_OK, STATUS_CODE } = require('../utils/constants');
 
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -50,7 +50,7 @@ module.exports.deleteCard = (req, res, next) => {
           if (!card) {
             throw new NotFoundError('Карточка не найдена');
           }
-          res.status(STATUS_OK).send({ data: card });
+          res.status(STATUS_CODE).send({ data: card });
         })
       // eslint-disable-next-line consistent-return
         .catch((err) => {
@@ -104,7 +104,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      res.status(STATUS_OK).send({ data: card });
+      res.status(STATUS_CODE).send({ data: card });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
