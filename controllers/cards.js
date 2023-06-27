@@ -20,13 +20,14 @@ module.exports.createCard = (req, res, next) => {
 
   Card
     .create({ name, link, owner: _id })
-    .then((user) => res.status(STATUS_OK).send({ data: user }))
+    .then((card) => res.status(STATUS_OK).send({ data: card }))
     // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new ValidationError('Переданы некорректные данные'));
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      return next(err);
     });
 };
 
