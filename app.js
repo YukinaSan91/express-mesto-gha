@@ -46,6 +46,8 @@ app.use(auth);
 app.use(usersRouter);
 app.use(cardsRouter);
 
+app.use(errors());
+
 app.use('*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
@@ -63,8 +65,6 @@ app.use((err, req, res, next) => {
 
   next();
 });
-
-app.use(errors());
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
