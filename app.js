@@ -27,19 +27,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?[a-zA-Z0-9-._~:?#\[\]@!\$&'()*+,;=]+#?$/).required(),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
+    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?[a-zA-Z0-9-._~:?#\[\]@!\$&'()*+,;=]+#?$/),
     email: Joi.string().email().required(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().min(8).required(),
   }),
 }), createUser);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
   }),
 }), login);
+
 app.use(auth);
 app.use(usersRouter);
 app.use(cardsRouter);
@@ -47,8 +49,6 @@ app.use(cardsRouter);
 app.use('*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
-
-app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
