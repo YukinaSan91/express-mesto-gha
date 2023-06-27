@@ -79,11 +79,17 @@ module.exports.createUser = (req, res, next) => {
       },
     ))
     .then((user) => {
-      const newDataUser = user.toObject();
-
       res
         .status(STATUS_OK)
-        .send({ data: newDataUser });
+        .send({
+          data: {
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+            _id: user._id,
+          },
+        });
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {
