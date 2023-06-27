@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable consistent-return */
 const Card = require('../models/card');
 const { ERROR_BAD_REQUEST, NOT_FOUND_ERROR, ERROR_CODE } = require('../utils/constants');
 
@@ -26,22 +28,34 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+
   Card
-    .findByIdAndRemove(cardId)
-    // eslint-disable-next-line consistent-return
+    .findById(cardId)
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
       }
-      res.send({ data: card });
-    })
-    // eslint-disable-next-line consistent-return
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+      if (card.owner.toString() !== req.user._id) {
+        return res.status(403).send({ message: 'Недостаточно прав доступа' });
       }
-      res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
-    });
+      Card
+        .findByIdAndRemove(cardId)
+      // eslint-disable-next-line consistent-return
+        .then((card) => {
+          if (!card) {
+            return res.status(NOT_FOUND_ERROR).send({ message: 'Карточка не найдена' });
+          }
+          res.send({ data: card });
+        })
+      // eslint-disable-next-line consistent-return
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+          }
+          res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' });
+        });
+    })
+    .catch(() => res.status(ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.likeCard = (req, res) => {
